@@ -1,0 +1,54 @@
+name: task_tm_app
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  cupertino_icons: ^1.0.8
+  dio: ^5.7.0
+  retrofit: ^4.4.1
+  dartz: ^0.10.1
+  get_it: ^8.0.2
+  injectable: ^2.5.0
+  logger: ^2.5.0  # for logging purpose
+  json_annotation: ^4.9.0
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  equatable: ^2.0.7
+  provider: ^6.1.2
+  skeletonizer: ^1.4.2
+  envied: ^1.0.0
+
+  flutter_provider_utilities:
+    git:
+      url: https://github.com/quantosapplications/flutter_provider_utilities.git
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  json_serializable: ^6.9.0
+  retrofit_generator: '>=8.0.0 <10.0.0'
+  build_runner: ^2.4.13
+  injectable_generator: ^2.6.2
+  hive_generator: ^2.0.1
+  envied_generator: ^1.0.0
+
+flutter:
+
+
+  uses-material-design: true
+
