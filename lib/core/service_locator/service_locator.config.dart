@@ -12,6 +12,7 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../config/helper/hive_helper/hive_database.dart' as _i596;
 import '../../feature/search_feature/data/data_sources/local_data_source/search_local_data_source.dart'
     as _i1064;
 import '../../feature/search_feature/data/data_sources/search_remote_data_source.dart'
@@ -38,6 +39,7 @@ import '../../feature/weather_feature/domain/use_cases/get_weather_use_case.dart
     as _i832;
 import '../network_service/api/weather_api.dart' as _i727;
 import '../network_service/dio_factory/dio_factory.dart' as _i115;
+import 'service_locator.dart' as _i105;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -50,14 +52,18 @@ extension GetItInjectableX on _i174.GetIt {
       environment,
       environmentFilter,
     );
+    final registerModule = _$RegisterModule();
     final dioFactory = _$DioFactory();
+    gh.lazySingleton<_i596.HiveCacheHelper>(
+        () => registerModule.hiveCacheHelper);
     gh.lazySingleton<_i361.Dio>(() => dioFactory.getDioFactory());
-    gh.lazySingleton<_i496.WeatherLocalDataSource>(
-        () => _i496.WeatherLocalDataSourceImpl());
-    gh.lazySingleton<_i1064.SearchLocalDataSource>(
-        () => _i1064.SearchLocalDataSourceImpl());
     gh.factory<_i727.WeatherServiceApi>(
         () => _i727.WeatherServiceApi(gh<_i361.Dio>()));
+    gh.lazySingleton<_i596.CacheHelper>(() => _i596.HiveCacheHelper());
+    gh.lazySingleton<_i1064.SearchLocalDataSource>(
+        () => _i1064.SearchLocalDataSourceImpl(gh<_i596.HiveCacheHelper>()));
+    gh.lazySingleton<_i496.WeatherLocalDataSource>(
+        () => _i496.WeatherLocalDataSourceImpl(gh<_i596.HiveCacheHelper>()));
     gh.lazySingleton<_i319.WeatherRepository>(
         () => _i872.WeatherRepositoryImpl(gh<_i496.WeatherLocalDataSource>()));
     gh.lazySingleton<_i850.SearchRemoteDataSource>(
@@ -79,5 +85,7 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$RegisterModule extends _i105.RegisterModule {}
 
 class _$DioFactory extends _i115.DioFactory {}

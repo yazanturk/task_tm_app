@@ -1,6 +1,7 @@
-import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
+import 'package:task_tm_app/config/app_constant/app_strings.dart';
 import 'package:task_tm_app/config/helper/hive_helper/entity/weather_model.dart';
+import 'package:task_tm_app/config/helper/hive_helper/hive_database.dart';
 
 abstract class SearchLocalDataSource {
   Future<bool> saveWeatherData(WeatherDataHiveModel weather);
@@ -9,13 +10,17 @@ abstract class SearchLocalDataSource {
 
 @LazySingleton(as: SearchLocalDataSource)
 class SearchLocalDataSourceImpl implements SearchLocalDataSource {
+  final HiveCacheHelper hiveCacheHelper;
+
+  SearchLocalDataSourceImpl(this.hiveCacheHelper);
+
   @override
   Future<bool> saveWeatherData(WeatherDataHiveModel weather) async {
-    var boxHive = Hive.box<WeatherModel>('weather');
-    final List<WeatherDataHiveModel> listOfWeather = boxHive.get(0)?.weathers ?? [];
+    final data = await hiveCacheHelper.getDataById<WeatherModel>(0, AppStrings.weatherBox);
+    final List<WeatherDataHiveModel> listOfWeather = data?.weathers ?? [];
     listOfWeather.insert(0, weather);
 
-    await boxHive.put(0, WeatherModel(listOfWeather.toSet().toList()));
+    await hiveCacheHelper.putData(WeatherModel(listOfWeather.toSet().toList()), AppStrings.weatherBox);
 
     return true;
   }
@@ -23,15 +28,15 @@ class SearchLocalDataSourceImpl implements SearchLocalDataSource {
   @override
   Future<bool> removeSearch(int weatherId) async {
     try {
-      var boxHive = Hive.box<WeatherModel>('weather');
+      final data = await hiveCacheHelper.getDataById<WeatherModel>(0, AppStrings.weatherBox);
 
-      final List<WeatherDataHiveModel> listOfWeather = boxHive.get(0)?.weathers ?? [];
+      final List<WeatherDataHiveModel> listOfWeather = data?.weathers ?? [];
 
       var index = listOfWeather.indexWhere((element) => element.id.toString() == weatherId.toString());
 
       listOfWeather.removeAt(index);
 
-      await boxHive.put(0, WeatherModel(listOfWeather));
+      await hiveCacheHelper.putData(WeatherModel(listOfWeather), AppStrings.weatherBox);
 
       return true;
     } catch (e) {
